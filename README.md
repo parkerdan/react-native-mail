@@ -76,6 +76,41 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
 ```javascript
 import RNMail from 'react-native-mail';
 
+var MailExampleApp = React.createClass({
+  handleHelp: function() {
+    RNMail.mail({
+      subject: 'need help',
+      recipients: ['support@example.com'],
+      body: '',
+      attachmentList: [{
+        path: '',  // The absolute path of the file from which to read data.
+      }]
+    }, (error, event) => {
+        if(error) {
+          AlertIOS.alert('Error', 'Could not send mail. Please send a mail to support@example.com');
+        }
+    });
+  },  
+  render: function() {
+    return (
+      <TouchableHighlight
+            onPress={row.handleHelp}
+            underlayColor="#f7f7f7">
+	      <View style={styles.container}>
+	        <Image source={require('image!announcement')} style={styles.image} />
+	      </View>
+	   </TouchableHighlight>
+    );
+  }
+});
+```
+
+### Note
+On android callback will only have error(if any) as the argument. event is not available on android.
+
+## Here is how it looks:
+![Demo gif](https://github.com/chirag04/react-native-mail/blob/master/screenshot.jpg)
+
 # API Modifications
 
 * Added Android HTML support
@@ -131,14 +166,6 @@ Example: Create attachmentList
 ```
 
 On Android, HTML email body results are awful as only *very* basic tags are supported.
-```
-
-### Note
-On android callback will only have error(if any) as the argument. event is not available on android.
-
-## Here is how it looks:
-![Demo gif](https://github.com/chirag04/react-native-mail/blob/master/screenshot.jpg)
-
 
 Is there really no way to make it work like iOS?
 * http://blog.iangclifton.com/2010/05/17/sending-html-email-with-android-intent/
