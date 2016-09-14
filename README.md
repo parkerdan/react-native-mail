@@ -74,44 +74,7 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
 
 ## Example
 ```javascript
-var Mailer = require('NativeModules').RNMail;
-
-var MailExampleApp = React.createClass({
-  handleHelp: function() {
-    Mailer.mail({
-      subject: 'need help',
-      recipients: ['support@example.com'],
-      body: '',
-      attachment: {
-        path: '',  // The absolute path of the file from which to read data.
-        type: '',   // Mime Type: jpg, png, doc, ppt, html, pdf
-        name: '',   // Optional: Custom filename for attachment
-      }
-    }, (error, event) => {
-        if(error) {
-          AlertIOS.alert('Error', 'Could not send mail. Please send a mail to support@example.com');
-        }
-    });
-  },  
-  render: function() {
-    return (
-      <TouchableHighlight
-            onPress={row.handleHelp}
-            underlayColor="#f7f7f7">
-	      <View style={styles.container}>
-	        <Image source={require('image!announcement')} style={styles.image} />
-	      </View>
-	   </TouchableHighlight>
-    );
-  }
-});
-```
-
-### Note
-On android callback will only have error(if any) as the argument. event is not available on android.
-
-## Here is how it looks:
-![Demo gif](https://github.com/chirag04/react-native-mail/blob/master/screenshot.jpg)
+import RNMail from 'react-native-mail';
 
 # API Modifications
 
@@ -122,9 +85,9 @@ On android callback will only have error(if any) as the argument. event is not a
 | Feature                  | iOS    | Android                                                                   |
 | ------------------------ |--------| ------------------------------------------------------------------------- |
 | HTML                     | Yes    | Yes - HTML support is **very** primitive.  No table support.              |
-| Multiple file attachments| Yes    | Yes                                                                       | 
+| Multiple file attachments| Yes    | Yes                                                                       |
 
-  
+
 | mail          | Type                                    | Comment                                   |
 | ------------- | --------------------------------------- | ----------------------------------------- |
 | subject       | string        		          |                                           |
@@ -132,16 +95,16 @@ On android callback will only have error(if any) as the argument. event is not a
 | body          | string                                  | HTML is supported. Android is very basic. |  
 | isHtml        | bool                                    | Set true if your body text contains HTML. |  
 | attachmentList| array of one or more attachment objects |                                           |  
-  
+
 
 | attachmentList| Type   | Comment                                                                   |
 | ------------- |--------| ------------------------------------------------------------------------- |
-| path          | string | Absolute path to file                                                     |
-| name          | string | Name to display as file atatchment. Not needed, name is derived from path | 
+| path          | string | Path to file.  Android path can not start with 'file://'   |
+| name          | string | Name to display as file atatchment. Not needed, name is derived from path |
 | mimeType      | string | Mime type. Not needed, mime is derived from file extension                |  
 
-  
-Example: Create attachmentList 
+
+Example: Create attachmentList
 ```
           let attachmentList = [];
           for(let i = 0; i < this.state.fileAttachmentList.length; ++i) {
@@ -154,7 +117,7 @@ Example: Create attachmentList
 ```
 * Added isHtml - Android HTML is awful ( no table, ol, etc. )
 ```
-          Mailer.mail({
+          RNMail.mail({
             subject: 'A great investment opportunity",
             recipients: ['john@acme.com', 'bob@acme.com'],
             body: '<h1>Greetings</h1>Hello John and Bob<br>Send money?<br><b>Goodbye</b>',
@@ -168,6 +131,14 @@ Example: Create attachmentList
 ```
 
 On Android, HTML email body results are awful as only *very* basic tags are supported.
+```
+
+### Note
+On android callback will only have error(if any) as the argument. event is not available on android.
+
+## Here is how it looks:
+![Demo gif](https://github.com/chirag04/react-native-mail/blob/master/screenshot.jpg)
+
 
 Is there really no way to make it work like iOS?
 * http://blog.iangclifton.com/2010/05/17/sending-html-email-with-android-intent/
