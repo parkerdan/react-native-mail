@@ -29,7 +29,8 @@ dependencies {
 }
 ```
 
-* register module (in MainActivity.java)
+* register module (in MainActivity.java) if MainActivity extends Activity
+
 
 ```java
 import com.chirag.RNMail.*;  // <--- import
@@ -61,6 +62,28 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
 
 }
 ```
+* register module if MainActivity extends ReactActivity
+
+* In `MainApplication.java`
+
+```java
+import com.chirag.RNMail.*; // <--- import
+
+public class MainApplication extends Application implements ReactApplication {
+    ....
+
+    @Override
+    protected List<ReactPackage> getPackages() {
+      return Arrays.<ReactPackage>asList(
+          new MainReactPackage(),
+          new RNMail()      // <------ add here
+      );
+    }
+  };
+
+```
+
+
 
 ### Add it to your iOS project
 
@@ -74,17 +97,22 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
 
 ## Example
 ```javascript
-import RNMail from 'react-native-mail';
+import Mailer from 'react-native-mail';
 
 var MailExampleApp = React.createClass({
   handleHelp: function() {
-    RNMail.mail({
+    Mailer.mail({
       subject: 'need help',
       recipients: ['support@example.com'],
+      ccRecipients: ['supportCC@example.com'],
+      bccRecipients: ['supportBCC@example.com'],
       body: '',
-      attachmentList: [{
+      isHTML: true, // iOS only, exclude if false
+      attachment: {
         path: '',  // The absolute path of the file from which to read data.
-      }]
+        type: '',   // Mime Type: jpg, png, doc, ppt, html, pdf
+        name: '',   // Optional: Custom filename for attachment
+      }
     }, (error, event) => {
         if(error) {
           AlertIOS.alert('Error', 'Could not send mail. Please send a mail to support@example.com');
@@ -110,63 +138,3 @@ On android callback will only have error(if any) as the argument. event is not a
 
 ## Here is how it looks:
 ![Demo gif](https://github.com/chirag04/react-native-mail/blob/master/screenshot.jpg)
-
-# API Modifications
-
-* Added Android HTML support
-* Added support for multiple attachments on iOS and Android.
-* Added auto-detect mime type from common file extensions.
-
-| Feature                  | iOS    | Android                                                                   |
-| ------------------------ |--------| ------------------------------------------------------------------------- |
-| HTML                     | Yes    | Yes - HTML support is **very** primitive.  No table support.              |
-| Multiple file attachments| Yes    | Yes                                                                       |
-
-
-| mail          | Type                                    | Comment                                   |
-| ------------- | --------------------------------------- | ----------------------------------------- |
-| subject       | string        		          |                                           |
-| recipients    | array of email address strings          |                                           |
-| body          | string                                  | HTML is supported. Android is very basic. |  
-| isHtml        | bool                                    | Set true if your body text contains HTML. |  
-| attachmentList| array of one or more attachment objects |                                           |  
-
-
-| attachmentList| Type   | Comment                                                                   |
-| ------------- |--------| ------------------------------------------------------------------------- |
-| path          | string | Path to file.  Android path can not start with 'file://'   |
-| name          | string | Name to display as file atatchment. Not needed, name is derived from path |
-| mimeType      | string | Mime type. Not needed, mime is derived from file extension                |  
-
-
-Example: Create attachmentList
-```
-          let attachmentList = [];
-          for(let i = 0; i < this.state.fileAttachmentList.length; ++i) {
-            attachmentList.push({
-              path: this.state.fileAttachmentList[i].fileNamePath,
-              name: this.state.fileAttachmentList[i].fileName,
-              mimeType: this.state.fileAttachmentList[i].fileMimeType,
-            });
-          }
-```
-* Added isHtml - Android HTML is awful ( no table, ol, etc. )
-```
-          RNMail.mail({
-            subject: 'A great investment opportunity",
-            recipients: ['john@acme.com', 'bob@acme.com'],
-            body: '<h1>Greetings</h1>Hello John and Bob<br>Send money?<br><b>Goodbye</b>',
-            isHtml: true,
-            attachmentList: attachmentList,
-          }, (error, event) => {
-            if(error) {
-              Alert.alert('Error', 'Could not send mail');
-            }
-          });
-```
-
-On Android, HTML email body results are awful as only *very* basic tags are supported.
-
-Is there really no way to make it work like iOS?
-* http://blog.iangclifton.com/2010/05/17/sending-html-email-with-android-intent/
-* http://www.nowherenearithaca.com/2011/10/some-notes-for-sending-html-email-in.html
